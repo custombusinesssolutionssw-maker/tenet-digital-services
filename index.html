@@ -159,6 +159,20 @@
   .footer a:hover { text-decoration: underline; }
   .footer .copyright { margin-top: 12px; opacity: 0.6; font-size: 13px; }
 
+  /* Contact modal */
+  .modal-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(5,9,20,0.75); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+  .modal-card { position: relative; width: 100%; max-width: 420px; background: var(--bg-deep); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px 32px; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.55); transform: translateY(16px) scale(0.97); transition: transform 0.3s cubic-bezier(.2,.8,.2,1); }
+  .modal-overlay.open .modal-card { transform: translateY(0) scale(1); }
+  .modal-close { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-lo); transition: background 0.2s ease, color 0.2s ease; }
+  .modal-close:hover { background: var(--glass-strong); color: var(--text-hi); }
+  .modal-card h3 { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+  .modal-card p { color: var(--text-lo); font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
+  .modal-email-row { display: flex; align-items: center; gap: 10px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 14px; padding: 12px 14px 12px 18px; margin-bottom: 20px; }
+  .modal-email-row span { font-family: var(--font-mono); font-size: 14px; color: var(--text-hi); flex: 1; text-align: left; word-break: break-all; }
+  .modal-copy-btn { flex-shrink: 0; gap: 6px; }
+  .modal-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
   @media (max-width: 640px) {
     .section { padding: 70px 24px; }
     .hero { padding: 120px 24px 70px; }
@@ -199,7 +213,7 @@
         <a href="#about">About</a>
         <a href="#contact">Contact</a>
       </nav>
-      <a href="mailto:tenetdigitalservicesltd@gmail.com" class="btn btn-primary btn-small">Get in touch</a>
+      <button type="button" class="btn btn-primary btn-small" onclick="openContactModal()">Get in touch</button>
     </div>
   </header>
 
@@ -209,7 +223,7 @@
       <h1 class="reveal">Get your business online<br>— properly.</h1>
       <p class="hero-sub reveal">Websites for small businesses across South Wales, built to take real bookings and real payments — not just sit there looking nice.</p>
       <div class="hero-actions reveal">
-        <a href="mailto:tenetdigitalservicesltd@gmail.com" class="btn btn-primary">Get a free quote</a>
+        <button type="button" class="btn btn-primary" onclick="openContactModal()">Get a free quote</button>
         <a href="#work" class="btn btn-ghost">See our work</a>
       </div>
     </div>
@@ -297,7 +311,7 @@
     <div class="cta-panel reveal">
       <h2>Ready to get your business online?</h2>
       <p>Tell us a bit about what you need — we'll get back to you with some ideas and a straightforward quote.</p>
-      <a href="mailto:tenetdigitalservicesltd@gmail.com" class="btn btn-primary">Get in touch</a>
+      <button type="button" class="btn btn-primary" onclick="openContactModal()">Get in touch</button>
     </div>
   </section>
 
@@ -314,6 +328,26 @@
     <p>South Wales · <a href="mailto:tenetdigitalservicesltd@gmail.com">tenetdigitalservicesltd@gmail.com</a></p>
     <p class="copyright">© 2026 TENET Digital Services</p>
   </footer>
+
+  <div class="modal-overlay" id="contactModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button type="button" class="modal-close" onclick="closeContactModal()" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <h3 id="modalTitle">Let's talk</h3>
+      <p>Drop us a line and we'll get back to you with some ideas and a straightforward quote.</p>
+      <div class="modal-email-row">
+        <span id="modalEmail">tenetdigitalservicesltd@gmail.com</span>
+        <button type="button" class="btn btn-ghost btn-small modal-copy-btn" onclick="copyContactEmail(this)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          Copy
+        </button>
+      </div>
+      <div class="modal-actions">
+        <a href="mailto:tenetdigitalservicesltd@gmail.com" class="btn btn-primary btn-small">Open email app</a>
+      </div>
+    </div>
+  </div>
 
 <script>
   // Scroll-triggered reveal
@@ -335,6 +369,33 @@
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+
+  // Contact modal
+  const contactModal = document.getElementById('contactModal');
+  function openContactModal() {
+    contactModal.classList.add('open');
+    contactModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeContactModal() {
+    contactModal.classList.remove('open');
+    contactModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  contactModal.addEventListener('click', (e) => {
+    if (e.target === contactModal) closeContactModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeContactModal();
+  });
+  function copyContactEmail(btn) {
+    const email = document.getElementById('modalEmail').textContent.trim();
+    navigator.clipboard.writeText(email).then(() => {
+      const original = btn.innerHTML;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.innerHTML = original; }, 1800);
+    });
+  }
 </script>
 
 </body>
